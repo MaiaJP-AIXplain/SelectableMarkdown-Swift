@@ -1,3 +1,4 @@
+import SwiftUI
 import Down
 import HighlightSwift
 import Combine
@@ -64,39 +65,4 @@ public final class CodeStyler:DownStyler{
             }
         }
     }
-    
-    
-//    @objc private func handleColorSchemeChange() {
-//            if UITraitCollection.current.userInterfaceStyle == .dark {
-//                self.colorScheme = .dark
-//            } else {
-//                self.colorScheme = .light
-//            }
-//        }
-//    
-    //TODO: Code smal blocks
-}
-
-                updatedAttributedText.append(NSAttributedString(string: "\n"))
-                updatedAttributedText.addAttribute(.font, value: UIFont.monospacedSystemFont(ofSize: 15, weight: .regular), range: NSRange(location: 0, length: updatedAttributedText.length))
-
-                //TODO: Rounded BG
-
-                Self.codeHighlight[str.hashValue] = AttributedString(updatedAttributedText)
-
-                codeHighlightDidChange.send()
-            }
-        }
-    }
-    
-    
-//    @objc private func handleColorSchemeChange() {
-//            if UITraitCollection.current.userInterfaceStyle == .dark {
-//                self.colorScheme = .dark
-//            } else {
-//                self.colorScheme = .light
-//            }
-//        }
-//    
-    //TODO: Code smal blocks
 }
