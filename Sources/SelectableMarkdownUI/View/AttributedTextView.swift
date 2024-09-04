@@ -8,6 +8,9 @@
 import UIKit
 import SwiftUI
 
+import UIKit
+import SwiftUI
+
 protocol StringFormatter {
     func format(string: String) -> NSAttributedString?
 }
@@ -29,13 +32,16 @@ struct AttributedTextView: UIViewControllerRepresentable {
         textView.backgroundColor = .clear
         textView.isScrollEnabled = false
         textView.attributedText = text
+        
+        // Set text alignment based on the current language direction
+        textView.textAlignment = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .right : .left
+        
         vc.view.addSubview(textView)
         textView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             textView.topAnchor.constraint(equalTo: vc.view.safeAreaLayoutGuide.topAnchor),
             textView.leadingAnchor.constraint(equalTo: vc.view.safeAreaLayoutGuide.leadingAnchor),
-            textView.rightAnchor.constraint(equalTo: vc.view.safeAreaLayoutGuide.rightAnchor),
-            
+            textView.trailingAnchor.constraint(equalTo: vc.view.safeAreaLayoutGuide.trailingAnchor)
         ])
         vc.view.isUserInteractionEnabled = true
         return vc
@@ -46,6 +52,10 @@ struct AttributedTextView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
         if let textView = uiViewController.view.subviews.first as? UITextView {
             textView.attributedText = text
+            
+            // Update text alignment when the view is updated
+            textView.textAlignment = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .right : .left
+            
             DispatchQueue.main.async {
                 didChangeHeight(textView.intrinsicContentSize.height)
             }
@@ -55,8 +65,6 @@ struct AttributedTextView: UIViewControllerRepresentable {
     /// ContentTextView
     /// subclass of UITextView returning contentSize as intrinsicContentSize
     private class ContentTextView: UITextView {
-        //        override var canBecomeFirstResponder: Bool { false }
-        
         override var intrinsicContentSize: CGSize {
             let x = frame.height > 0 ? contentSize : super.intrinsicContentSize
             return super.intrinsicContentSize
