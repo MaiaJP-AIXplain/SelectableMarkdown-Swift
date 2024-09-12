@@ -12,6 +12,7 @@ protocol StringFormatter {
     func format(string: String) -> NSAttributedString?
 }
 
+@MainActor
 struct AttributedTextView: UIViewControllerRepresentable {
     typealias UIViewControllerType = UIViewController
     
