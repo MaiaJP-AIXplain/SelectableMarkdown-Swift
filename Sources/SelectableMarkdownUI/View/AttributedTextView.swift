@@ -19,14 +19,20 @@ struct AttributedTextView: UIViewControllerRepresentable {
     let text: NSAttributedString
     
     private let textView = ContentTextView()
-    
+
+    init(text: NSAttributedString, editMenuActions: [ EditMenuAction ]? = nil, didChangeHeight: @escaping (CGFloat) -> Void) {
+        self.text = text
+        textView.editMenuActions = editMenuActions ?? []
+        self.didChangeHeight = didChangeHeight
+    }
+
     func makeUIViewController(context: Context) -> UIViewControllerType {
         let vc = UIViewController()
         
         textView.contentInset = .zero
         textView.isSelectable = true
         textView.isEditable = false
-        
+
         textView.backgroundColor = .clear
         textView.isScrollEnabled = false
         textView.attributedText = text
@@ -56,11 +62,38 @@ struct AttributedTextView: UIViewControllerRepresentable {
     /// ContentTextView
     /// subclass of UITextView returning contentSize as intrinsicContentSize
     private class ContentTextView: UITextView {
-        //        override var canBecomeFirstResponder: Bool { false }
+        var editMenuActions = [ EditMenuAction ]()
         
         override var intrinsicContentSize: CGSize {
             let x = frame.height > 0 ? contentSize : super.intrinsicContentSize
             return super.intrinsicContentSize
         }
+
+        override func editMenu(for textRange: UITextRange, suggestedActions: [UIMenuElement]) -> UIMenu? {
+            var actions = suggestedActions
+
+            editMenuActions.reversed().forEach { actionTemplate in
+                let action = UIAction(title: actionTemplate.label) { (action) in
+                    if let range = self.selectedTextRange,
+                       let selectedText = self.text(in: range) {
+                        actionTemplate.action(selectedText)
+                    }
+                }
+
+                actions.insert(action, at: 0)
+            }
+
+            return UIMenu(children: actions)
+        }
+    }
+}
+
+public struct EditMenuAction {
+    var label: String
+    var action: (String) -> Void
+
+    public init(label: String, action: @escaping (String) -> Void) {
+        self.label = label
+        self.action = action
     }
 }
